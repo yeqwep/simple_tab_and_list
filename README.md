@@ -5,6 +5,9 @@
  Defold[Ver1.4.1]  
  https://defold.com/  
 # DEMO
+
+https://user-images.githubusercontent.com/38267288/210156603-98734420-b4f5-4e50-a889-8376b75b60b1.mp4
+  
  https://yeqwep.itch.io/zundamon-talking-tutorial  
 # Credits
  This prototype is made based on "Simple Button".  
