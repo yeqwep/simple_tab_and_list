@@ -1,0 +1,125 @@
+-- リストウィンドウ
+local data = require("main.data")
+
+local HANDLER = "lists_handler"
+-- --------------------------------------------------
+-- hit check
+-- --------------------------------------------------
+local function hit_test(node, action_id, action)
+	local hit = gui.pick_node( node, action.x, action.y )
+	local touch = action_id == hash("touch")
+	return touch and hit and gui.is_enabled(node)
+end
+-- --------------------------------------------------
+-- finish
+-- --------------------------------------------------
+local function hide_window(self)
+	msg.post("test:/go#test", "hide_window")
+end
+-- --------------------------------------------------
+-- show list
+-- --------------------------------------------------
+local function show_list(self)
+	local url = data.window_url
+	url.fragment = HANDLER
+	msg.post(url,"show",{num = self.tag_num})
+end
+-- --------------------------------------------------
+-- button setup
+-- --------------------------------------------------
+local s_button = require "tool.button"
+local ok_button = nil
+local tags_button = nil
+local function create_button(node, callback)
+	return s_button.create(node, callback)
+end
+local function create_tags(node_id, node_num, select_num, callback)
+	return s_button.create_tags(node_id, node_num, select_num, callback)
+end
+local function setup_button(self)
+	ok_button =
+		create_button(
+		gui.get_node("ok"),
+		function()
+			hide_window(self)
+		end
+	)
+	tags_button = create_tags(
+		"tag",
+		4,
+		self.tag_num,
+		function(button,num)
+			self.tag_num = num
+			show_list(self)
+		end
+	)
+end
+-- --------------------------------------------------
+-- init
+-- --------------------------------------------------
+local function init_list(self)
+	data.window_url = msg.url(".")
+	data.mask_pos = gui.get_screen_position(self.mask)
+
+	self.tag_num = 1
+
+	self.list_id = nil
+end
+local function set_node(self)
+	self.parent = gui.get_node("parent")
+	self.mask = gui.get_node("mask")
+	self.titlebar = gui.get_node("titlebar")
+end
+local function reset_tag(self)
+	self.tag_num = 1
+	if tags_button ~= nil then
+		tags_button.select_change(self.tag_num)
+	end
+end
+local function show_window(self)
+	reset_tag(self)
+	show_list(self)
+end
+-- --------------------------------------------------
+-- common
+-- --------------------------------------------------
+function init(self)
+	msg.post("#", "acquire_input_focus")
+	gui.set_render_order(9)
+	set_node(self)
+	init_list(self)
+	setup_button(self)
+
+	show_window(self)
+	self.move_pos = vmath.vector3(0)
+end
+function update(self, dt)
+	if self.move then
+		local pos = self.ori_pos + self.move_pos
+		gui.set_position(self.parent, pos)
+		data.mask_pos = gui.get_screen_position(self.mask)
+	end
+end
+function on_message(self, message_id, message, sender)
+	if message_id == hash("ready") then
+	elseif message_id == hash("show") then
+	elseif message_id == hash("hide") then
+	end
+end
+function on_input(self, action_id, action)
+	ok_button.on_input(action_id, action)
+	tags_button.on_input(action_id, action)
+	-- window drag move
+	if hit_test(self.titlebar, action_id, action) and not self.move then
+		self.move = true	
+		self.ori_pos = gui.get_position(self.parent)
+		self.touch_ori_pos = vmath.vector3(action.x, action.y, 0)
+	end
+	if self.move then
+		self.move_pos.x = action.x - self.touch_ori_pos.x
+		self.move_pos.y = action.y - self.touch_ori_pos.y
+		if action.released and action_id == hash("touch") then
+			self.move = false
+		end
+	end
+end

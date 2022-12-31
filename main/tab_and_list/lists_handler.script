@@ -1,0 +1,37 @@
+local GO_NAME = "list"
+local function load_complete(self, url, result)
+	-- Loading is complete, resources are ready to spawn
+	self.loaded_id = collectionfactory.create(url)
+end
+local function del_go(self, num)
+	if self.loaded_id then
+		go.delete(self.loaded_id)
+		local url = self.my_url
+		url.fragment = GO_NAME .. num
+		collectionfactory.unload(url)
+		self.loaded_id = nil
+		self.loaded_num = 0
+	end
+end
+-- --------------------------------------------------
+-- common
+-- --------------------------------------------------
+function init(self)
+	self.my_url = msg.url(".")
+	self.loaded_id = nil
+	self.loaded_num = 0
+end
+function final(self)
+	del_go(self, self.loaded_num)
+end
+function on_message(self, message_id, message, sender)
+	if message_id == hash('show') then
+		del_go(self, self.loaded_num)
+		local url = self.my_url
+		url.fragment = GO_NAME .. message.num
+		collectionfactory.load(url, load_complete)
+		self.loaded_num = message.num
+	elseif message_id == hash("hide") then
+		del_go(self, message.num)
+	end
+end

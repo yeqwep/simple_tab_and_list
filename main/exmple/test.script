@@ -1,0 +1,34 @@
+local function load_complete(self, url, result)
+	-- Loading is complete, resources are ready to spawn
+	self.go_ids = collectionfactory.create(url)
+end
+-- --------------------------------------------------
+-- common
+-- --------------------------------------------------
+function init(self)
+	collectionfactory.load("/go#window", load_complete)
+end
+function final(self)
+	if self.go_ids then
+		go.delete(self.go_ids)
+		collectionfactory.unload("/go#window")
+		self.go_ids = nil
+	end
+end
+function on_message(self, message_id, message, sender)
+	if message_id == hash("show_window") then
+		if self.go_ids then
+			go.delete(self.go_ids)
+			collectionfactory.unload("/go#exmple_top")
+			self.go_ids = nil
+		end
+		collectionfactory.load("/go#window", load_complete)
+	elseif message_id == hash("hide_window") then
+		if self.go_ids then
+			go.delete(self.go_ids)
+			collectionfactory.unload("/go#window")
+			self.go_ids = nil
+		end
+		collectionfactory.load("/go#exmple_top", load_complete)
+	end
+end

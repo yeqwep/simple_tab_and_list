@@ -1,0 +1,33 @@
+local collections = {
+	"handler#test",
+}
+go.property("load_select", 1)
+
+local function hex2rgba(hex, w)
+	local alpha = 1
+	if w then
+		alpha = w
+	end
+	hex = hex:gsub("#", "")
+	local rgba =
+		vmath.vector4(
+		tonumber("0x" .. hex:sub(1, 2)) / 255,
+		tonumber("0x" .. hex:sub(3, 4)) / 255,
+		tonumber("0x" .. hex:sub(5, 6)) / 255,
+		alpha
+	)
+	return rgba
+end
+-- --------------------------------------------------
+-- common
+-- --------------------------------------------------
+function init(self)
+	msg.post("@render:", "clear_color", {color = hex2rgba("#AAD6EC")})
+	msg.post(collections[self.load_select], "load")
+	msg.post(".", "acquire_input_focus")
+end
+function on_message(self, message_id, message,sender)
+	if message_id == hash("proxy_loaded") then
+		msg.post(collections[self.load_select], "enable")
+	end
+end
