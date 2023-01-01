@@ -1,8 +1,7 @@
 # Simple Tab and List
  Happy New Year 2023!  
 
- This prototype have Tab menu and page style list.  
- Defold[Ver1.4.1]  
+ This prototype have Tab menu and page style list for Defold[Ver1.4.1].  
  https://defold.com/  
 # DEMO
 
