@@ -1,4 +1,4 @@
-script: "/main/exmple/example.gui_script"
+script: "/main/example/example.gui_script"
 fonts {
   name: "big"
   font: "/font/big.font"

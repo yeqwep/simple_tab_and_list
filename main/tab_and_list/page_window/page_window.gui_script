@@ -97,8 +97,8 @@ function update(self, dt)
 	if self.move then
 		local pos = self.ori_pos + self.move_pos
 		gui.set_position(self.parent, pos)
-		data.mask_pos = gui.get_screen_position(self.mask)
 	end
+	data.mask_pos = gui.get_screen_position(self.mask)
 end
 function on_message(self, message_id, message, sender)
 	if message_id == hash("ready") then

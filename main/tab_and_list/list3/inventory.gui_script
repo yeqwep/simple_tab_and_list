@@ -81,7 +81,7 @@ end
 -- selected back color update
 -- --------------------------------------------------
 local function update_list(self)
-	gui.set_position(self.mask, data.mask_pos)
+	gui.set_screen_position(self.mask, data.mask_pos)
 	list.update_list(self.page_num, params)
 end
 -- --------------------------------------------------
